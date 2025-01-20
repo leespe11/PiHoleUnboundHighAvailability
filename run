@@ -86,7 +86,7 @@ echo "[INFO] Sleeping 10s before changing pihole permissions"
 sleep 10
 docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root.pihole /etc/pihole/ /etc/dnsmasq.d;"
 
-apt update && sudo apt install keepalived libipset3 -y
+apt update && apt install keepalived -y
 
 systemctl enable keepalived.service
 
@@ -94,7 +94,7 @@ chmod +x ./config/chk_ftl.sh
 mkdir /etc/scripts
 cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
 
-if [ $type == 'master']; then
+if [ $type == 'master' ]; then
 	cp ./config/keepalived-master.conf /etc/keepalived/keepalived.conf
 else
 	cp ./config/keepalived-standby.conf /etc/keepalived/keepalived.conf
