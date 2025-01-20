@@ -70,7 +70,7 @@ services:
     ### while change the permissions,users, and groups on somefiles making them inaccasable...
     ### In the run script ive added a workaround as mentioned here: https://github.com/pi-hole/docker-pi-hole/issues/610#issuecomment-922832145
     ### In the case server has a scheduled reboot regularly, all the following line to your cron job a few minites after the scheduled reboot: 
-    ### docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root.pihole /etc/pihole/ /etc/dnsmasq.d;"
+    ### docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R www-data:pihole /etc/pihole/ /etc/dnsmasq.d;"
     volumes:
       - ./data/etc-pihole:/etc/pihole
       - ./data/etc-dnsmasq.d:/etc/dnsmasq.d
