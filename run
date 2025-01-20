@@ -1,0 +1,94 @@
+#!/bin/bash
+#### INFO
+
+type=""
+
+if [ "$1" == "" ] || [ $# -gt 1 ]; then
+	echo "Input Parameter 'master' or 'standby' required"
+	exit 0
+elif [[ $(echo $1 | awk '{print tolower($0)}') == "master" ]] || [[ $(echo $1 | awk '{print tolower($0)}') == "standby" ]]; then
+	echo "Creating " + $(echo $1 | awk '{print toupper($0)}') + ' instance'
+	type=$(echo $1 | awk '{print tolower($0)}')
+else
+	exit 0
+fi
+
+echo "[INFO] Checking if ./data directory exist"
+if [ -d "./data" ];then
+	echo "[INFO] Directory ./data exists!"
+else 
+	echo "[WARN] Directory ./data not found"
+	echo "[INFO] Creating: ./data"
+	mkdir ./data
+fi
+
+echo "[INFO] Loading environmental variables"
+set -a
+source config.env
+PWD=$(pwd)
+    
+CERT_PATH="./data/certs"
+SERVER_KEY="$CERT_PATH/server.key"
+SERVER_CSR="$CERT_PATH/server.csr"
+SERVER_CRT="$CERT_PATH/server.crt"
+EXTFILE="config/cert_ext.cnf"
+OPENSSL_CMD="/usr/bin/openssl"
+	
+if [ ! -f $SERVER_KEY ] && [ ! -f $SERVER_CSR ] && [ ! -f $SERVER_CRT ]; then 
+	# generating server key
+	echo "Generating private key"
+	$OPENSSL_CMD genrsa -out $SERVER_KEY  4096 2>/dev/null
+	if [ $? -ne 0 ] ; then
+		 echo "ERROR: Failed to generate $SERVER_KEY"
+		 exit 1
+	fi
+
+	## Update Common Name in External File
+	sed -i 's/commonName.*/commonName              = '"${HOSTNAME}"'/' ./config/cert_ext.cnf
+	#/bin/echo "commonName              = $COMMON_NAME" >> $EXTFILE
+
+	# Generating Certificate Signing Request using config file
+	echo "Generating Certificate Signing Request"
+	$OPENSSL_CMD req -new -key $SERVER_KEY -out $SERVER_CSR -config $EXTFILE 2>/dev/null
+	if [ $? -ne 0 ] ; then
+		 echo "ERROR: Failed to generate $SERVER_CSR"
+		 exit 1
+	fi
+
+
+	echo "Generating self signed certificate"
+	$OPENSSL_CMD x509 -req -days 3650 -in $SERVER_CSR -signkey $SERVER_KEY -out $SERVER_CRT 2>/dev/null
+	if [ $? -ne 0 ] ; then
+		 echo "ERROR: Failed to generate self-signed certificate file $SERVER_CRT"
+	fi
+	cat $SERVER_KEY $SERVER_CRT > $CERT_PATH/server.pem
+else
+	echo "[INFO] Not creating certificates, files exists"
+fi
+	
+
+echo "[INFO] Starting Docker Environment"
+docker compose --profile $type up -d --force-recreate --build
+
+# workaround for https://github.com/pi-hole/docker-pi-hole/issues/610#issuecomment-922832145
+echo "[INFO] Done starting containers"
+
+echo "[INFO] Sleeping 10s before changing pihole permissions"
+sleep 10
+docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root.pihole /etc/pihole/ /etc/dnsmasq.d;"
+
+apt update && sudo apt install keepalived libipset3 -y
+
+systemctl enable keepalived.service
+
+chmod +x ./config/chk_ftl
+mkdir /etc/scripts
+cp ./config/chk_ftl /etc/scripts/chk_ftl
+
+if [ $type == 'master']; then
+	cp ./config/keepalived-master.conf /etc/keepalived/keepalived.conf
+else
+	cp ./config/keepalived-standby.conf /etc/keepalived/keepalived.conf
+fi
+
+sudo systemctl restart keepalived.service
