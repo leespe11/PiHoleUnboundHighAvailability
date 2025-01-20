@@ -30,8 +30,8 @@ services:
     ### In the case server has a scheduled reboot regularly, all the following line to your cron job a few minites after the scheduled reboot: 
     ### docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root.pihole /etc/pihole/ /etc/dnsmasq.d;"
     volumes:
-      - ./data/etc-pihole:/etc/pihole
-      - ./data/etc-dnsmasq.d:/etc/dnsmasq.d
+      - ./data/etc-pihole:/etc/pihole:rw
+      - ./data/etc-dnsmasq.d:/etc/dnsmasq.d:rw
       - ./data/certs:/etc/lighttpd/certs
     restart: unless-stopped
     profiles: [ "master" ]
