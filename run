@@ -91,7 +91,16 @@ apt update && apt install keepalived -y
 systemctl enable keepalived.service
 
 chmod +x ./config/chk_ftl.sh
-mkdir /etc/scripts
+
+echo "[INFO] Checking if /etc/scripts directory exist"
+if [ -d "/etc/scripts" ];then
+	echo "[INFO] Directory /etc/scripts exists!"
+else 
+	echo "[WARN] Directory /etc/scripts not found"
+	echo "[INFO] Creating: /etc/scripts"
+	mkdir /etc/scripts
+fi
+
 cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
 
 if [ $type == 'master' ]; then
@@ -100,4 +109,4 @@ else
 	cp ./config/keepalived-standby.conf /etc/keepalived/keepalived.conf
 fi
 
-sudo systemctl restart keepalived.service
+systemctl restart keepalived.service
