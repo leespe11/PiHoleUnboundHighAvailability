@@ -5,7 +5,7 @@ services:
     container_name: pihole
     build:
       context: ./config
-      dockerfile: Dockerfile-pihole
+      dockerfile: Dockerfile-pihole-master
     image: pihole/pihole:latest_https
     ports:
       - "53:53/tcp"
@@ -47,7 +47,7 @@ services:
     container_name: pihole
     build:
       context: ./config
-      dockerfile: Dockerfile-pihole
+      dockerfile: Dockerfile-pihole-standby
     image: pihole/pihole:latest_https
     ports:
       - "53:53/tcp"
