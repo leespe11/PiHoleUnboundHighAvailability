@@ -7,7 +7,7 @@ if [ "$1" == "" ] || [ $# -gt 1 ]; then
 	echo "Input Parameter 'master' or 'standby' required"
 	exit 0
 elif [[ $(echo $1 | awk '{print tolower($0)}') == "master" ]] || [[ $(echo $1 | awk '{print tolower($0)}') == "standby" ]]; then
-	echo "Creating " + $(echo $1 | awk '{print toupper($0)}') + ' instance'
+	echo "Creating $(echo $1 | awk '{print toupper($0)}') instance"
 	type=$(echo $1 | awk '{print tolower($0)}')
 else
 	exit 0
