@@ -90,9 +90,9 @@ apt update && sudo apt install keepalived libipset3 -y
 
 systemctl enable keepalived.service
 
-chmod +x ./config/chk_ftl
+chmod +x ./config/chk_ftl.sh
 mkdir /etc/scripts
-cp ./config/chk_ftl /etc/scripts/chk_ftl
+cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
 
 if [ $type == 'master']; then
 	cp ./config/keepalived-master.conf /etc/keepalived/keepalived.conf

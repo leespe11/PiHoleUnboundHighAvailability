@@ -18,9 +18,9 @@ $HTTP["scheme"] == "http" { \n\
 	} \n\
 }' >> /etc/lighttpd/lighttpd.conf
 
-COPY ./config/pihole-gemini-master.sh /usr/local/bin/pihole-gemini
+COPY pihole-gemini-master.sh /usr/local/bin/pihole-gemini
 
-RUN sed -i '$ d' gravity.sh
+RUN sed -i '$ d' /opt/pihole/gravity.sh
 
 RUN echo -e '\n\
 su -c /usr/local/bin/pihole-gemini - pi \n\
