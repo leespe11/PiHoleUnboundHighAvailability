@@ -23,7 +23,7 @@ SCRIPTVER="pihole-gemini v0.0.2.2a"
 # USER-DEFINED VARIABLES - START - Edit the values in this section to configure the script to your install.
  
     # User account - Should have sudo and ssh access, and a "matching" account should be set up on both Pi-hole systems
-        HAUSER=pi
+        HAUSER=$SSH_USER
  
     # Pi-hole directory (this path is expected to be the same on both Pi-holes, and should be where the FILES are located)
         PIHOLEDIR=/etc/pihole
@@ -31,11 +31,11 @@ SCRIPTVER="pihole-gemini v0.0.2.2a"
     # IP Addresses - Note that removing the value or the variable definition of either SSHPORT will cause the script to
                 #    use the default SSH Port of 22 for connections to that ip address.
         # Primary Pi-hole ip and ssh port
-            PIHOLE1=192.168.44.13
+            PIHOLE1=$IP
             SSHPORT1=22
  
         # Secondary Pi-hole ip and ssh port
-            PIHOLE2=192.168.44.14
+            PIHOLE2=$SSH_IP
             SSHPORT2=22
  
     # Define the local path to store the logfile, DO NOT include a trailing "/". Make sure this path is writeable by the user
@@ -43,7 +43,7 @@ SCRIPTVER="pihole-gemini v0.0.2.2a"
         LOGFILEPATH="/tmp"
  
     # How long to keep old log files (in addition to the current day's log, so a value of 6 means 7 days)
-        LOGKEEPDAYS=13
+        LOGKEEPDAYS=$LOGKEEPDAYS
  
 # USER-DEFINED VARIABLES - END - Edits made below this line may break the script.
 # ---------------------------------------------------------------------------------------------------------

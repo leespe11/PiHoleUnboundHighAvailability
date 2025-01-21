@@ -1,5 +1,8 @@
 FROM pihole/pihole:latest
 
+ARG 
+ARG
+
 RUN echo -e '\n\
 #Loading openssl \n\
 server.modules += ( "mod_openssl" ) \n\
@@ -18,7 +21,7 @@ $HTTP["scheme"] == "http" { \n\
 	} \n\
 }' >> /etc/lighttpd/lighttpd.conf
 
-COPY pihole-gemini-master.sh /usr/local/bin/pihole-gemini
+COPY pihole-gemini.sh /usr/local/bin/pihole-gemini
 
 RUN sed -i '$ d' /opt/pihole/gravity.sh
 

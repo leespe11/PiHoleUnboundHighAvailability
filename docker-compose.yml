@@ -21,8 +21,13 @@ services:
       PIHOLE_DNS_: '172.28.2.3'
       DNSSEC: 'true'
       WEBTHEME: 'default-dark'
-      VIRTUAL_HOST: 'pihole-master'
+      VIRTUAL_HOST: ${HOSTNAME}
       HTTPS_PORT: '443'
+      IP: ${HOST}
+      SSH_USER: ${SSH_USER}
+      SSH_IP: ${SSH_IP}
+      SSHPORT: '22'
+      LOGKEEPDAYS: '13'
     ### https://github.com/pi-hole/docker-pi-hole  
     ### Can mount volumes, although there is a known bug where pihole start up scripts
     ### while change the permissions,users, and groups on somefiles making them inaccasable...

@@ -1,17 +1,57 @@
 #!/bin/bash
-#### INFO
-
-type=""
+IFS=', ' read -r -a hosts <<< "$HOSTS"
+IFS=', ' read -r -a hostnames <<< "$HOSTNAMES"
+IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
 
 if [ "$1" == "" ] || [ $# -gt 1 ]; then
-	echo "Input Parameter 'master' or 'standby' required"
-	exit 0
-elif [[ $(echo $1 | awk '{print tolower($0)}') == "master" ]] || [[ $(echo $1 | awk '{print tolower($0)}') == "standby" ]]; then
-	echo "Creating $(echo $1 | awk '{print toupper($0)}') instance"
-	type=$(echo $1 | awk '{print tolower($0)}')
-else
-	exit 0
+        echo "*** Please make sure you have configured the environment varaibles in config.env ***"
+        echo "---USAGE---"
+        echo "./run [server index]|[server name]"
+        exit 0
 fi
+
+if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
+    echo "[ERR] ARRAY LENGTHS DONT MATCH"
+    echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment vaiables do not match"
+    exit 0
+fi
+
+if [ ${#hosts[@]} -lt 2 ]; then
+    echo "[ERR] Must provide at least two hosts, e.g.:"
+    echo "[ERR] HOSTS=\"192.168.0.10, 192.168.0.20\""
+    exit 0
+fi
+if [ ${#hostnames[@]} -lt 2 ]; then
+    echo "[ERR] Must provide at least two hostnames, e.g.:"
+    echo "[ERR] HOSTNAMES=\"pihole-master, pihole-standby1\""
+    exit 0
+fi
+if [ ${#ssh_usernames[@]} -lt 2 ]; then
+    echo "[ERR] Must provide at least two ssh usernames, e.g.:"
+    echo "[ERR] SSH_USERNAMES=\"pihole1, pihole2\""
+    exit 0
+fi
+
+index=-1
+for i in "${!hostnames[@]}"; do
+    if [ "${hostnames[$i]}" -eq "$1" ]; then
+        index=$i
+    fi
+done
+
+if [ $index -lt 0 ] && ![[ $1 =~ '^[0-9]+$' ]]; then
+    if [ $1 -lt "${#hostnames[@]}"]; then
+        echo "[INFO] STARTING CONFIG FOR: ${hostnames[$1]}"
+    else
+        echo "[ERR] Hostname / Host index not found: ${1}"
+        exit 0
+    fi
+else
+    echo "[ERR] Hostname not found in list: ${1}"
+    exit 0
+fi
+
+################
 
 echo "[INFO] Checking if ./data directory exist"
 if [ -d "./data" ];then
