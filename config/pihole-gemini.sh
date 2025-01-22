@@ -58,7 +58,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 				#     and updates the remote files if neccesary.  
 	
 	LISTS=$(find /etc/pihole -type f -path '/etc/pihole/*' -name 'list.*' -printf '%f\n')	
-	COMBO=("${FILES[@]}" "${LISTS[@]}"
+	COMBO=("${FILES[@]}" "${LISTS[@]}")
 				
 	for FILE in ${COMBO[@]}
 		do
