@@ -1,14 +1,18 @@
 #!/bin/bash
+if [ "$1" == "" ] || [ $# -gt 1 ]; then
+	echo "*** Please make sure you have configured the environment varaibles in config.env ***"
+	echo "---USAGE---"
+	echo "./run [server index]|[server name]"
+	exit 0
+fi
+
+echo "[INFO] Loading environmental variables"
+set -a
+source config.env
+
 IFS=', ' read -r -a hosts <<< "$HOSTS"
 IFS=', ' read -r -a hostnames <<< "$HOSTNAMES"
 IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
-
-if [ "$1" == "" ] || [ $# -gt 1 ]; then
-        echo "*** Please make sure you have configured the environment varaibles in config.env ***"
-        echo "---USAGE---"
-        echo "./run [server index]|[server name]"
-        exit 0
-fi
 
 if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
     echo "[ERR] ARRAY LENGTHS DONT MATCH"
@@ -84,11 +88,6 @@ else
 	echo "[INFO] Creating: ./data/certs"
 	mkdir ./data/certs
 fi
-
-echo "[INFO] Loading environmental variables"
-set -a
-source config.env
-PWD=$(pwd)
     
 CERT_PATH="./data/certs"
 SERVER_KEY="$CERT_PATH/server.key"
