@@ -200,5 +200,5 @@ vrrp_instance PIHOLE {
 
 systemctl restart keepalived.service
 
-docker exec -it pihole ssh-keygen -t rsa -P
+docker exec -it pihole ssh-keygen -t rsa
 docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
