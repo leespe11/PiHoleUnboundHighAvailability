@@ -174,7 +174,7 @@ vrrp_script chk_ftl {
 }
 
 vrrp_instance PIHOLE {
-	state MASTER
+	state $type
 	interface eth0
 	virtual_router_id 55
 	priority $PRIORITY
