@@ -1,19 +1,10 @@
 #! /bin/bash
-PIHOLEDIR=/etc/pihole
 REMOTEPIHOLEDIR=/pihole/settings
  
 LOGFILEPATH="/var/log/pihole-gemini"
  
 # List of files to sync
-	FILES=(
-		'black.list'
-		'blacklist.txt'
-		'regex.list'
-		'whitelist.txt'
-		'lan.list'
-		'adlists.list'
-		'gravity.list'
-	)
+FILES=( 'black.list' 'blacklist.txt' 'regex.list' 'whitelist.txt' 'lan.list' 'adlists.list' 'gravity.list' 'custom.list', 'local.list', 'gravity.db')
  
 # Full logfile path and name, uncluding timestamp
 LOGFILE="${LOGFILEPATH}/pihole-gemini_`date +\%Y\%m\%d`.log"
@@ -64,14 +55,18 @@ if [ $RUNUPDATE -eq 1 ]; then
 	echo "--------------------------------------------------------------------------------------------" 2>&1 | tee -a $LOGFILE
 
 	# FILE SYNC - START - This section handles compares the local and remote versions of the files specified in the $FILES variable
-				#     and updates the remote files if neccesary.   
-	for FILE in ${FILES[@]}
+				#     and updates the remote files if neccesary.  
+	
+	LISTS=$(find /etc/pihole -type f -path '/etc/pihole/*' -name 'list.*' -printf '%f\n')	
+	COMBO=("${FILES[@]}" "${LISTS[@]}"
+				
+	for FILE in ${COMBO[@]}
 		do
-			if [[ -f $PIHOLEDIR/$FILE ]]; then
+			if [[ -f /etc/pihole/$FILE ]]; then
 				echo "`date '+%Y-%m-%d %H:%M:%S'` - Comparing local to remote $FILE and updating if neccesary." 2>&1 | tee -a $LOGFILE
 
 				#RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER@$SSH_IP -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$PIHOLEDIR)
-				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
+				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" /etc/pihole/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
 
 					if [[ -n "${RSYNC_COMMAND}" ]]; then
 						# rsync copied changes so restart
@@ -84,6 +79,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 							;;
 
 							gravity.list)
+							gravity.db)
 								# Updating gravity.list requires only a gravity update
 								echo "`date '+%Y-%m-%d %H:%M:%S'` - Updated $FILE on $SSH_IP. Gravity will be updated on $SSH_IP." 2>&1 | tee -a $LOGFILE
 								RUNGRAVITY=1
