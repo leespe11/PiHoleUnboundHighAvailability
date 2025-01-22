@@ -43,9 +43,15 @@ for i in "${!hostnames[@]}"; do
     fi
 done
 
+type=""
 if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
     if [ $1 -lt "${#hostnames[@]}" ]; then
-        echo "[INFO] STARTING CONFIG FOR: ${hostnames[$1]} on ${hosts[$1]}"
+		if [ $index -eq 0 ]; then
+			type="MASTER"
+		else	
+			type="BACKUP"
+		fi
+        echo "[INFO] Starting config for $type server: ${hostnames[$1]} on ${hosts[$1]}"
     else
         echo "[ERR] Hostname / Host index not found: ${1}"
         exit 0
@@ -153,12 +159,6 @@ fi
 
 cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
 
-type=""
-if [ $index -eq 0 ]; then
-	type="MASTER"
-else	
-	type="BACKUP"
-fi
 PRIORITY=$((150 - (index * 5)))
 echo "global_defs { 
 	router_id pihole-dns-0$index_plus
