@@ -46,12 +46,13 @@ done
 type=""
 if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
     if [ $1 -lt "${#hostnames[@]}" ]; then
-		if [ $index -eq 0 ]; then
+		if [ $1 -eq 0 ]; then
 			type="MASTER"
 		else	
 			type="BACKUP"
 		fi
         echo "[INFO] Starting config for $type server: ${hostnames[$1]} on ${hosts[$1]}"
+		index=$1
     else
         echo "[ERR] Hostname / Host index not found: ${1}"
         exit 0
@@ -200,4 +201,5 @@ vrrp_instance PIHOLE {
 
 systemctl restart keepalived.service
 
+ssh-keygen -t rsa
 ssh-copy-id $SSH_USER@$SSH_IP
