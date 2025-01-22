@@ -26,6 +26,6 @@ RUN echo -e '\n\
 /usr/local/bin/pihole-gemini \n\
 "${PIHOLE_COMMAND}" status' >> /opt/pihole/gravity.sh
 
-
+RUN chmod +x /usr/local/bin/pihole-gemini
 
 RUN apt update && apt install rsync openssh-client -y
