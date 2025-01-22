@@ -134,7 +134,7 @@ fi
 	
 
 echo "[INFO] Starting Docker Environment"
-docker compose up -d --force-recreate --build
+docker compose up -d --build #--force-recreate
 
 # workaround for https://github.com/pi-hole/docker-pi-hole/issues/610#issuecomment-922832145
 echo "[INFO] Done starting containers"
@@ -201,5 +201,5 @@ vrrp_instance PIHOLE {
 
 systemctl restart keepalived.service
 
-ssh-keygen -t rsa
-ssh-copy-id $SSH_USER@$SSH_IP
+docker exec -it pihole ssh-keygen -t rsa
+docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
