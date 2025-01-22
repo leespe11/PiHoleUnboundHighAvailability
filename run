@@ -45,7 +45,7 @@ done
 
 if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
     if [ $1 -lt "${#hostnames[@]}" ]; then
-        echo "[INFO] STARTING CONFIG FOR: ${hostnames[$1]}"
+        echo "[INFO] STARTING CONFIG FOR: ${hostnames[$1]} on ${hosts[$1]}"
     else
         echo "[ERR] Hostname / Host index not found: ${1}"
         exit 0
@@ -63,6 +63,8 @@ else
     export SSH_IP="${hosts[$index_plus]}"
 	export SSH_USER="${SSH_USERNAMES[$index_plus]}"
 fi
+export LOCAL_IP="${hosts[$index]}"
+export LOCAL_USER="${HOSTNAMES[$index]}"
 
 ################
 
@@ -151,22 +153,12 @@ fi
 
 cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
 
-if [ $type == 'master' ]; then
-	cp ./config/keepalived-master.conf /etc/keepalived/keepalived.conf
-else
-	cp ./config/keepalived-standby.conf /etc/keepalived/keepalived.conf
-fi
-
 type=""
-
 if [ $index -eq 0 ]; then
 	type="MASTER"
 else	
 	type="BACKUP"
 fi
-
-LOCAL_IP="${hosts[$index]}"
-LOCAL_USER="${SSH_USERNAMES[$index_plus]}"
 PRIORITY=$((150 - (index * 5)))
 echo "global_defs { 
 	router_id pihole-dns-0$index_plus
