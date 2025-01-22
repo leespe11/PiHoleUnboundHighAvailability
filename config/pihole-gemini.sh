@@ -116,6 +116,8 @@ if [ $RUNUPDATE -eq 1 ]; then
 
 		else
 			echo "`date '+%Y-%m-%d %H:%M:%S'` - Successfully restarted pihole-FTL service on $SSH_IP." 2>&1 | tee -a $LOGFILE
+			echo "`date '+%Y-%m-%d %H:%M:%S'` - Sleeping for 7 seconds to allow container to reboot" 2>&1 | tee -a $LOGFILE
+			sleep 7
 		fi
 	fi
     # RESTART SSH_IP - END
