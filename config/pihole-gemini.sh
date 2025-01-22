@@ -1,5 +1,6 @@
 #! /bin/bash
 PIHOLEDIR=/etc/pihole
+REMOTEPIHOLEDIR=/pihole/settings
  
 LOGFILEPATH="/var/log/pihole-gemini"
  
@@ -70,7 +71,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 				echo "`date '+%Y-%m-%d %H:%M:%S'` - Comparing local to remote $FILE and updating if neccesary." 2>&1 | tee -a $LOGFILE
 
 				#RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER@$SSH_IP -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$PIHOLEDIR)
-				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$PIHOLEDIR)
+				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
 
 					if [[ -n "${RSYNC_COMMAND}" ]]; then
 						# rsync copied changes so restart
