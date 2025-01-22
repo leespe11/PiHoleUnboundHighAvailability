@@ -78,8 +78,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 								RUNGRAVITY=1
 							;;
 
-							gravity.list)
-							gravity.db)
+							gravity.list|gravity.db)
 								# Updating gravity.list requires only a gravity update
 								echo "`date '+%Y-%m-%d %H:%M:%S'` - Updated $FILE on $SSH_IP. Gravity will be updated on $SSH_IP." 2>&1 | tee -a $LOGFILE
 								RUNGRAVITY=1
