@@ -23,7 +23,9 @@ COPY pihole-gemini.sh /usr/local/bin/pihole-gemini
 RUN sed -i '$ d' /opt/pihole/gravity.sh
 
 RUN echo -e '\n\
-su -c /usr/local/bin/pihole-gemini - pi \n\
+/usr/local/bin/pihole-gemini \n\
 "${PIHOLE_COMMAND}" status' >> /opt/pihole/gravity.sh
+
+
 
 RUN apt update && apt install rsync openssh-client -y
