@@ -20,12 +20,10 @@ $HTTP["scheme"] == "http" { \n\
 
 COPY pihole-gemini.sh /usr/local/bin/pihole-gemini
 
-RUN sed -i '$ d' /opt/pihole/gravity.sh
-
-RUN echo -e '\n\
-/usr/local/bin/pihole-gemini \n\
-"${PIHOLE_COMMAND}" status' >> /opt/pihole/gravity.sh
-
-RUN chmod +x /usr/local/bin/pihole-gemini
-
-RUN apt update && apt install rsync openssh-client -y
+RUN sed -i '/piholeDir="\/etc\/${basename}"/a chmod 755 -R "${piholeDir}" "\/etc\/dnsmasq.d"\nchown -R root.pihole "${piholeDir}" "\/etc\/dnsmasq.d"\n' /opt/pihole/gravity.sh; \
+    sed -i '$ d' /opt/pihole/gravity.sh; \
+    echo -e '\n\
+    /usr/local/bin/pihole-gemini \n\
+    "${PIHOLE_COMMAND}" status' >> /opt/pihole/gravity.sh; \
+    chmod +x /usr/local/bin/pihole-gemini; \
+    apt update && apt install rsync openssh-client -y

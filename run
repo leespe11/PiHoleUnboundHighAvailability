@@ -1,11 +1,4 @@
 #!/bin/bash
-if [ "$1" == "" ] || [ $# -gt 1 ]; then
-	echo "*** Please make sure you have configured the environment varaibles in config.env ***"
-	echo "---USAGE---"
-	echo "./run [server index]|[server name]"
-	exit 0
-fi
-
 echo "[INFO] Loading environmental variables"
 set -a
 source config.env
@@ -16,43 +9,33 @@ IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
 
 if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
     echo "[ERR] ARRAY LENGTHS DONT MATCH"
-    echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment vaiables do not match"
+    echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
     exit 0
 fi
 
-if [ ${#hosts[@]} -lt 2 ]; then
-    echo "[ERR] Must provide at least two hosts, e.g.:"
-    echo "[ERR] HOSTS=\"192.168.0.10, 192.168.0.20\""
-    exit 0
-fi
-if [ ${#hostnames[@]} -lt 2 ]; then
-    echo "[ERR] Must provide at least two hostnames, e.g.:"
-    echo "[ERR] HOSTNAMES=\"pihole-master, pihole-standby1\""
-    exit 0
-fi
-if [ ${#ssh_usernames[@]} -lt 2 ]; then
-    echo "[ERR] Must provide at least two ssh usernames, e.g.:"
-    echo "[ERR] SSH_USERNAMES=\"pihole1, pihole2\""
-    exit 0
+if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -eq 1 ]; then
+	echo "*** Please make sure you have configured the environment variables in config.env ***"
+	echo "---USAGE---"
+	echo "./run [server index]|[server name]"
+	exit 0
 fi
 
 index=-1
-for i in "${!hostnames[@]}"; do
+STANDALONE=0
+if [ ${#hosts[@]} -eq 1 ]; then
+  STANDALONE=1
+  index=0
+else
+  for i in "${!hostnames[@]}"; do
     if [ "${hostnames[$i]}" == "$1" ]; then
-        index=$i
+      index=$i
     fi
-done
+  done
+fi
 
-type=""
 if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
     if [ $1 -lt "${#hostnames[@]}" ]; then
-		if [ $1 -eq 0 ]; then
-			type="MASTER"
-		else	
-			type="BACKUP"
-		fi
-        echo "[INFO] Starting config for $type server: ${hostnames[$1]} on ${hosts[$1]}"
-		index=$1
+		  index=$1
     else
         echo "[ERR] Hostname / Host index not found: ${1}"
         exit 0
@@ -62,13 +45,26 @@ else
     exit 0
 fi
 
+type=""
+if [ $index -eq 0 ]; then
+  type="MASTER"
+else
+  type="BACKUP"
+fi
+
+if [ $STANDALONE ]; then
+  echo "[INFO] Starting STANDALONE server: ${hostnames[$index]} on ${hosts[$index]}"
+else
+  echo "[INFO] Starting config for $type server: ${hostnames[$index]} on ${hosts[$index]}"
+fi
+
 index_plus=$((index + 1))
 if [ $index -eq $((${#hosts[@]} - 1)) ]; then
-    export SSH_IP="${hosts[0]}"
+  export SSH_IP="${hosts[0]}"
 	export SSH_USER="${ssh_usernames[0]}"
 else
-    export SSH_IP="${hosts[$index_plus]}"
-	export SSH_USER="${ssh_usernames[$index_plus]}"
+  export SSH_IP="${hosts[$index_plus]}"
+  export SSH_USER="${ssh_usernames[$index_plus]}"
 fi
 export LOCAL_IP="${hosts[$index]}"
 export LOCAL_USER="${hostnames[$index]}"
@@ -132,6 +128,12 @@ else
 	echo "[INFO] Not creating certificates, files exists"
 fi
 
+if [ $STANDALONE ]; then
+  export DOCKERFILE_NAME=Dockerfile-keepalive
+else
+  export DOCKERFILE_NAME=Dockerfile-standalone
+fi
+
 echo "[INFO] Starting Docker Environment"
 docker compose up -d --build #--force-recreate
 
@@ -142,63 +144,66 @@ echo "[INFO] Sleeping 10s before changing pihole permissions"
 sleep 10
 docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R www-data:pihole /etc/pihole/ /etc/dnsmasq.d;"
 
-apt update && apt install keepalived -y
+if ! [ $STANDALONE ]; then
+  apt update && apt install keepalived -y
 
-systemctl enable keepalived.service
+  systemctl enable keepalived.service
 
-chmod +x ./config/chk_ftl.sh
+  chmod +x ./config/chk_ftl.sh
 
-echo "[INFO] Checking if /etc/scripts directory exist"
-if [ -d "/etc/scripts" ];then
-	echo "[INFO] Directory /etc/scripts exists!"
-else 
-	echo "[WARN] Directory /etc/scripts not found"
-	echo "[INFO] Creating: /etc/scripts"
-	mkdir /etc/scripts
+  echo "[INFO] Checking if /etc/scripts directory exist"
+  if [ -d "/etc/scripts" ];then
+    echo "[INFO] Directory /etc/scripts exists!"
+  else
+    echo "[WARN] Directory /etc/scripts not found"
+    echo "[INFO] Creating: /etc/scripts"
+    mkdir /etc/scripts
+  fi
+
+  cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
+
+  PRIORITY=$((150 - (index * 5)))
+  echo "global_defs {
+    router_id pihole-dns-0$index_plus
+    script_user root
+    enable_script_security
+  }
+
+  vrrp_script chk_ftl {
+    script \"/etc/scripts/chk_ftl.sh\"
+    interval 1
+    weight -10
+  }
+
+  vrrp_instance PIHOLE {
+    state $type
+    interface eth0
+    virtual_router_id 55
+    priority $PRIORITY
+    advert_int 1
+    unicast_src_ip $LOCAL_IP
+    unicast_peer {
+      $SSH_IP
+    }
+
+    authentication {
+      auth_type PASS
+      auth_pass $KEEPALIVE_PASSWD
+    }
+
+    virtual_ipaddress {
+      $VIRTUAL_IP/24
+    }
+
+    track_script {
+      chk_ftl
+    }
+  }
+  " > /etc/keepalived/keepalived.conf
+
+  systemctl restart keepalived.service
+
+  docker exec -it pihole ssh-keygen -t rsa
+  docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
 fi
-
-cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
-
-PRIORITY=$((150 - (index * 5)))
-echo "global_defs { 
-	router_id pihole-dns-0$index_plus
-	script_user root
-	enable_script_security
-}
-
-vrrp_script chk_ftl {
-	script \"/etc/scripts/chk_ftl.sh\"
-	interval 1
-	weight -10
-}
-
-vrrp_instance PIHOLE {
-	state $type
-	interface eth0
-	virtual_router_id 55
-	priority $PRIORITY
-	advert_int 1
-	unicast_src_ip $LOCAL_IP
-	unicast_peer {
-		$SSH_IP
-	}
- 
-	authentication {
-		auth_type PASS
-		auth_pass $KEEPALIVE_PASSWD
-	}
- 
-	virtual_ipaddress {
-		$VIRTUAL_IP/24
-	}
- 
-	track_script {
-		chk_ftl
-	}
-}
-" > /etc/keepalived/keepalived.conf
-
-systemctl restart keepalived.service
-
-docker exec -it pihole ssh-keygen -t rsa
-docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
+echo "[INFO] DONE SETUP"

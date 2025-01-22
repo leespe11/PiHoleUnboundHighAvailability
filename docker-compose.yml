@@ -3,6 +3,7 @@ services:
     container_name: pihole
     build:
       context: ./config
+      dockerfile: ${DOCKERFILE_NAME}
     image: pihole/pihole:latest_https
     ports:
       - "53:53/tcp"
