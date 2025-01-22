@@ -58,13 +58,13 @@ fi
 index_plus=$((index + 1))
 if [ $index -eq $((${#hosts[@]} - 1)) ]; then
     export SSH_IP="${hosts[0]}"
-	export SSH_USER="${SSH_USERNAMES[0]}"
+	export SSH_USER="${ssh_usernames[0]}"
 else
     export SSH_IP="${hosts[$index_plus]}"
-	export SSH_USER="${SSH_USERNAMES[$index_plus]}"
+	export SSH_USER="${ssh_usernames[$index_plus]}"
 fi
 export LOCAL_IP="${hosts[$index]}"
-export LOCAL_USER="${HOSTNAMES[$index]}"
+export LOCAL_USER="${hostnames[$index]}"
 
 ################
 
