@@ -38,7 +38,7 @@ fi
 
 index=-1
 for i in "${!hostnames[@]}"; do
-    if [ "${hostnames[$i]}" -eq "$1" ]; then
+    if [ "${hostnames[$i]}" == "$1" ]; then
         index=$i
     fi
 done
