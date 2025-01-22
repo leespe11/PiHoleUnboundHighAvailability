@@ -1,8 +1,5 @@
 FROM pihole/pihole:latest
 
-ARG 
-ARG
-
 RUN echo -e '\n\
 #Loading openssl \n\
 server.modules += ( "mod_openssl" ) \n\
@@ -28,3 +25,5 @@ RUN sed -i '$ d' /opt/pihole/gravity.sh
 RUN echo -e '\n\
 su -c /usr/local/bin/pihole-gemini - pi \n\
 "${PIHOLE_COMMAND}" status' >> /opt/pihole/gravity.sh
+
+RUN apt update && apt install rsync
