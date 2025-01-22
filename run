@@ -43,7 +43,7 @@ for i in "${!hostnames[@]}"; do
     fi
 done
 
-if [ $index -lt 0 ] && ![[ $1 =~ '^[0-9]+$' ]]; then
+if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
     if [ $1 -lt "${#hostnames[@]}"]; then
         echo "[INFO] STARTING CONFIG FOR: ${hostnames[$1]}"
     else
