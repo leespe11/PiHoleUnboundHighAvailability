@@ -131,7 +131,6 @@ if [ ! -f $SERVER_KEY ] || [ ! -f $SERVER_CSR ] || [ ! -f $SERVER_CRT ]; then
 else
 	echo "[INFO] Not creating certificates, files exists"
 fi
-	
 
 echo "[INFO] Starting Docker Environment"
 docker compose up -d --build #--force-recreate
