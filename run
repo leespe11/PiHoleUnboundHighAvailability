@@ -64,11 +64,6 @@ else
 	export SSH_USER="${SSH_USERNAMES[$index_plus]}"
 fi
 
-if [ $index -eq ${#hosts[@]} - 1 ]; then
-	export SSH_IP="${hosts[$index]}"
-fi
-export SSH_IP
-
 ################
 
 echo "[INFO] Checking if ./data directory exist"
