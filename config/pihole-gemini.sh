@@ -68,21 +68,22 @@ if [ $RUNUPDATE -eq 1 ]; then
 				#RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER@$SSH_IP -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$PIHOLEDIR)
 				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' --size-only -e "ssh -l $SSH_USER -p$SSH_PORT" /etc/pihole/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
 					
-					echo "Output of RSYNC COMMAND: ${RSYNC_COMMAND}"
-					if [[ -n "${RSYNC_COMMAND}" ]]; then
+					if [[ "${RSYNC_COMMAND}" != ""]]; then
 						# rsync copied changes so restart
 
 						case $FILE in
 							adlists.list)
 								# Updating adlists.list requires only a gravity update
 								echo "`date '+%Y-%m-%d %H:%M:%S'` - Updated $FILE on $SSH_IP. Gravity will be updated on $SSH_IP." 2>&1 | tee -a $LOGFILE
-								RUNGRAVITY=1
+								#RUNGRAVITY=1
+								RESTART=1
 							;;
 
 							gravity.list|gravity.db)
 								# Updating gravity.list requires only a gravity update
 								echo "`date '+%Y-%m-%d %H:%M:%S'` - Updated $FILE on $SSH_IP. Gravity will be updated on $SSH_IP." 2>&1 | tee -a $LOGFILE
-								RUNGRAVITY=1
+								#RUNGRAVITY=1
+								RESTART=1
 							;;
 
 							*)
@@ -125,25 +126,23 @@ if [ $RUNUPDATE -eq 1 ]; then
  
     # UPDATE REMOTE GRAVITY (IF NEEDED) - START
     echo "--------------------------------------------------------------------------------------------" 2>&1 | tee -a $LOGFILE
-#    case $RUNGRAVITY in
-#		0)
-#			# Gravity did not need updating - do nothing
-#			echo "`date '+%Y-%m-%d %H:%M:%S'` - Gravity on $SSH_IP did not need updating." 2>&1 | tee -a $LOGFILE
-#		;;
-#		1)
-#			# Gravity needs refreshing, but not a full update - Update gravity without redownloading lists
-#			echo "`date '+%Y-%m-%d %H:%M:%S'` - Refreshing gravity on $SSH_IP. Lists will not be redownloaded." 2>&1 | tee -a $LOGFILE
-#			ssh $SSH_USER@$SSH_IP -p $SSH_PORT "sudo -S docker exec -it pihole pihole -g --skip-download"
-#			if [ $? -ne 0 ]; then
-#				echo "* `date '+%Y-%m-%d %H:%M:%S'` - ERROR! - Unable to refresh gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
-#
-#			else
-#				echo "`date '+%Y-%m-%d %H:%M:%S'` - Success! Successfully refreshed gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
-#			fi
-#		;;
-#	esac
-echo "`date '+%Y-%m-%d %H:%M:%S'` - Sending gravity update command next node: $SSH_IP." 2>&1 | tee -a $LOGFILE
-ssh $SSH_USER@$SSH_IP -p $SSH_PORT "sudo -S docker exec -it pihole pihole -g --skip-download"
+    case $RUNGRAVITY in
+		0)
+			# Gravity did not need updating - do nothing
+			echo "`date '+%Y-%m-%d %H:%M:%S'` - Gravity on $SSH_IP did not need updating." 2>&1 | tee -a $LOGFILE
+		;;
+		1)
+			# Gravity needs refreshing, but not a full update - Update gravity without redownloading lists
+			echo "`date '+%Y-%m-%d %H:%M:%S'` - Refreshing gravity on $SSH_IP. Lists will not be redownloaded." 2>&1 | tee -a $LOGFILE
+			ssh $SSH_USER@$SSH_IP -p $SSH_PORT "sudo -S docker exec -it pihole pihole -g --skip-download"
+			if [ $? -ne 0 ]; then
+				echo "* `date '+%Y-%m-%d %H:%M:%S'` - ERROR! - Unable to refresh gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
+
+			else
+				echo "`date '+%Y-%m-%d %H:%M:%S'` - Success! Successfully refreshed gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
+			fi
+		;;
+	esac
 
 
     # UPDATE REMOTE GRAVITY - END
