@@ -4,7 +4,7 @@ REMOTEPIHOLEDIR=/pihole/settings
 LOGFILEPATH="/var/log/pihole-gemini"
  
 # List of files to sync
-FILES=( 'black.list' 'blacklist.txt' 'regex.list' 'whitelist.txt' 'lan.list' 'adlists.list' 'gravity.list' 'custom.list', 'local.list', 'gravity.db')
+FILES=( 'black.list' 'blacklist.txt' 'regex.list' 'whitelist.txt' 'lan.list' 'adlists.list' 'gravity.list' 'custom.list', 'local.list')
  
 # Full logfile path and name, uncluding timestamp
 LOGFILE="${LOGFILEPATH}/pihole-gemini_`date +\%Y\%m\%d`.log"
