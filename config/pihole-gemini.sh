@@ -4,7 +4,7 @@ REMOTEPIHOLEDIR=/pihole/settings
 LOGFILEPATH="/var/log/pihole-gemini"
  
 # List of files to sync
-FILES=( 'black.list' 'blacklist.txt' 'regex.list' 'whitelist.txt' 'lan.list' 'adlists.list' 'gravity.list' 'custom.list', 'local.list')
+FILES=( 'black.list' 'blacklist.txt' 'regex.list' 'whitelist.txt' 'lan.list' 'adlists.list' 'gravity.list' 'custom.list', 'local.list', 'gravity.db')
  
 # Full logfile path and name, uncluding timestamp
 LOGFILE="${LOGFILEPATH}/pihole-gemini_`date +\%Y\%m\%d`.log"
@@ -66,7 +66,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 				echo "`date '+%Y-%m-%d %H:%M:%S'` - Comparing local to remote $FILE and updating if neccesary." 2>&1 | tee -a $LOGFILE
 
 				#RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER@$SSH_IP -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$PIHOLEDIR)
-				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" /etc/pihole/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
+				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" /etc/pihole/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR/$FILE)
 				echo "Output of Rsync Command: ${RSYNC_COMMAND}"
 					
 					if [[ "${RSYNC_COMMAND}" =~ "+" ]]; then
