@@ -14,7 +14,7 @@ Execute permissions for run script
 ```
 chmod +x run
 ```
-# High-Availability Instances
+### High-Availability Instances
 The run script takes one input paramater for the HA instances.
 
 The Index or hostname of the HOSTNAMES configured in **config.env**
@@ -31,7 +31,7 @@ Start the Standby/Backup server(s)
 ./run 1 
 ```
 
-# Standalone Instances
+### Standalone Instance
 Start the service Master server
 ```
 ./run
