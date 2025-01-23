@@ -206,4 +206,6 @@ if ! [ $STANDALONE ]; then
   docker exec -it pihole ssh-keygen -t rsa
   docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
 fi
+
 echo "[INFO] DONE SETUP"
+exit 1
