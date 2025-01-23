@@ -7,10 +7,13 @@ IFS=', ' read -r -a hosts <<< "$HOSTS"
 IFS=', ' read -r -a hostnames <<< "$HOSTNAMES"
 IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
 
-if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ] && [ ${#hosts[@]} -gt 1 ] || [ ${#hostnames[@]} -gt 1 ]; then
-    echo "[ERR] ARRAY LENGTHS DONT MATCH"
-    echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
-    exit 0
+if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
+    if [ ${#hosts[@]} -gt 1 ] || [ ${#hostnames[@]} -gt 1 ]; then
+		echo "[ERR] ARRAY LENGTHS DONT MATCH"
+		echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
+		exit 0
+	fi
+   
 fi
 
 if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -ne 1 ]; then
