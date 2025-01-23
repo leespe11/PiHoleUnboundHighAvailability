@@ -174,22 +174,22 @@ vrrp_script chk_ftl {
 	weight 10
 }
 vrrp_script chk_http_port {
-	script \"</dev/tcp/127.0.0.1/80 &> /dev/null\"
+	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/80\'\"
 	interval 1
 	weight 10
 }
 vrrp_script chk_https_port {
-	script \"</dev/tcp/127.0.0.1/443 &> /dev/null\"
+	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/443\'\"
 	interval 1
 	weight 10
 }
 vrrp_script chk_dns_port {
-	script \"</dev/tcp/127.0.0.1/53 &> /dev/null\"
+	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/53\'\"
 	interval 1
 	weight 10
 }
 vrrp_script chk_docker_container {
-	script \"/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL &> /dev/null\"
+	script \"/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\"
 	interval 1
 	weight 10
 }
