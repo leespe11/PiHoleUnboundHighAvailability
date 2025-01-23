@@ -125,23 +125,27 @@ if [ $RUNUPDATE -eq 1 ]; then
  
     # UPDATE REMOTE GRAVITY (IF NEEDED) - START
     echo "--------------------------------------------------------------------------------------------" 2>&1 | tee -a $LOGFILE
-	case $RUNGRAVITY in
-		0)
-			# Gravity did not need updating - do nothing
-			echo "`date '+%Y-%m-%d %H:%M:%S'` - Gravity on $SSH_IP did not need updating." 2>&1 | tee -a $LOGFILE
-		;;
-		1)
-			# Gravity needs refreshing, but not a full update - Update gravity without redownloading lists
-			echo "`date '+%Y-%m-%d %H:%M:%S'` - Refreshing gravity on $SSH_IP. Lists will not be redownloaded." 2>&1 | tee -a $LOGFILE
-			ssh $SSH_USER@$SSH_IP -p $SSH_PORT "sudo -S docker exec -it pihole pihole -g --skip-download"
-			if [ $? -ne 0 ]; then
-				echo "* `date '+%Y-%m-%d %H:%M:%S'` - ERROR! - Unable to refresh gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
+#    case $RUNGRAVITY in
+#		0)
+#			# Gravity did not need updating - do nothing
+#			echo "`date '+%Y-%m-%d %H:%M:%S'` - Gravity on $SSH_IP did not need updating." 2>&1 | tee -a $LOGFILE
+#		;;
+#		1)
+#			# Gravity needs refreshing, but not a full update - Update gravity without redownloading lists
+#			echo "`date '+%Y-%m-%d %H:%M:%S'` - Refreshing gravity on $SSH_IP. Lists will not be redownloaded." 2>&1 | tee -a $LOGFILE
+#			ssh $SSH_USER@$SSH_IP -p $SSH_PORT "sudo -S docker exec -it pihole pihole -g --skip-download"
+#			if [ $? -ne 0 ]; then
+#				echo "* `date '+%Y-%m-%d %H:%M:%S'` - ERROR! - Unable to refresh gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
+#
+#			else
+#				echo "`date '+%Y-%m-%d %H:%M:%S'` - Success! Successfully refreshed gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
+#			fi
+#		;;
+#	esac
+echo "`date '+%Y-%m-%d %H:%M:%S'` - Sending gravity update command next node: $SSH_IP." 2>&1 | tee -a $LOGFILE
+ssh $SSH_USER@$SSH_IP -p $SSH_PORT "sudo -S docker exec -it pihole pihole -g --skip-download"
 
-			else
-				echo "`date '+%Y-%m-%d %H:%M:%S'` - Success! Successfully refreshed gravity on $SSH_IP." 2>&1 | tee -a $LOGFILE
-			fi
-		;;
-	esac
+
     # UPDATE REMOTE GRAVITY - END
  
     # CLEAN OLD LOG FILES - START
