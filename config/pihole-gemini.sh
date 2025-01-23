@@ -68,7 +68,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 				#RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER@$SSH_IP -p$SSH_PORT" $PIHOLEDIR/$FILE $SSH_USER@$SSH_IP:$PIHOLEDIR)
 				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' --size-only -e "ssh -l $SSH_USER -p$SSH_PORT" /etc/pihole/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
 					
-					if [[ "${RSYNC_COMMAND}" != ""]]; then
+					if [[ "${RSYNC_COMMAND}" != "" ]]; then
 						# rsync copied changes so restart
 
 						case $FILE in
