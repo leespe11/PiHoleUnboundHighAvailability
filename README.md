@@ -28,11 +28,12 @@ Start the Master server
 ```
 Start the Standby/Backup server(s)
 ```
-./run 1 
+./run 1
+./run 2
 ```
 
 ### Standalone Instance
-Start the service Master server
+Start the standalone server
 ```
 ./run
 ```
