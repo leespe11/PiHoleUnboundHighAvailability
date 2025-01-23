@@ -33,7 +33,6 @@ Start the Standby/Backup server(s)
 ```
 
 ### Standalone Instance
-Start the standalone server
 ```
 ./run
 ```
