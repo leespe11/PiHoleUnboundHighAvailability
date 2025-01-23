@@ -7,7 +7,7 @@ IFS=', ' read -r -a hosts <<< "$HOSTS"
 IFS=', ' read -r -a hostnames <<< "$HOSTNAMES"
 IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
 
-if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
+if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ] && [ ${#hosts[@]} -gt 1 ] || [ ${#hostnames[@]} -gt 1 ]; then
     echo "[ERR] ARRAY LENGTHS DONT MATCH"
     echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
     exit 0
@@ -63,7 +63,7 @@ fi
 index_plus=$((index + 1))
 if [ $index -eq $((${#hosts[@]} - 1)) ]; then
   export SSH_IP="${hosts[0]}"
-	export SSH_USER="${ssh_usernames[0]}"
+  export SSH_USER="${ssh_usernames[0]}"
 else
   export SSH_IP="${hosts[$index_plus]}"
   export SSH_USER="${ssh_usernames[$index_plus]}"

@@ -1,22 +1,31 @@
-# PiHoleUnboundHighAvailability
+# Pi-hole Unbound DNSSEC High-Availability/Standalone docker
 ## Install
 Download Repository
 ```
 git clone https://github.com/leespe11/PiHoleUnboundHighAvailability.git
 ````
-Change the parameters of **config.env** based on your requirments 
-Change the parameters of **cert_ext.cnf** based on your requirments 
+## Edit Config/Environment files
+**config.env**
 
+**config/cert_ext.cnf**
+
+## RUN
 Execute permissions for run script
 ```
 chmod +x run
 ```
-Start the service Master server
+#High-Availability Instances
+Start the Master server
 ```
-./run master
+./run 0
+```
+Start the Standby/Backup server(s)
+```
+./run 1 
 ```
 
-Start the service Standby/Backup server
+#Standalone Instances
+Start the service Master server
 ```
-./run standby 
+./run
 ```
