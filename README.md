@@ -1,4 +1,4 @@
-# Pi-hole Unbound DNSSEC High-Availability/Standalone docker
+# Pi-hole Unbound DNSSEC HA/Standalone docker
 ## Install
 Download Repository
 ```
@@ -14,7 +14,14 @@ Execute permissions for run script
 ```
 chmod +x run
 ```
-#High-Availability Instances
+# High-Availability Instances
+The run script takes one input paramater for the HA instances.
+
+The Index or hostname of the HOSTS/HOSTNAMES configured in **config.env**
+
+The same config file should be coppied onto each instance and ./run with a different index
+
+
 Start the Master server
 ```
 ./run 0
@@ -24,7 +31,7 @@ Start the Standby/Backup server(s)
 ./run 1 
 ```
 
-#Standalone Instances
+# Standalone Instances
 Start the service Master server
 ```
 ./run
