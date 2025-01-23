@@ -171,22 +171,22 @@ echo "global_defs {
 vrrp_script chk_http_port {
 	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/80\'\"
 	interval 1
-	weight 10
+	weight 5
 }
 vrrp_script chk_https_port {
 	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/443\'\"
 	interval 1
-	weight 10
+	weight 5
 }
 vrrp_script chk_dns_port {
 	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/53\'\"
 	interval 1
-	weight 10
+	weight 5
 }
 vrrp_script chk_docker_container {
 	script \"/bin/bash -c \'/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\'\"
 	interval 20
-	weight -30
+	weight -20
 }
 
 vrrp_instance PIHOLE {
