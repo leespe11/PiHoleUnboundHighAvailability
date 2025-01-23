@@ -13,7 +13,7 @@ if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[
     exit 0
 fi
 
-if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -eq 1 ]; then
+if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -ne 1 ]; then
 	echo "*** Please make sure you have configured the environment variables in config.env ***"
 	echo "---USAGE---"
 	echo "./run [server index]|[server name]"
