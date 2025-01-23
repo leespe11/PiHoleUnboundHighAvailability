@@ -54,8 +54,10 @@ fi
 
 if [ $STANDALONE ]; then
   echo "[INFO] Starting STANDALONE server: ${hostnames[$index]} on ${hosts[$index]}"
+  export DOCKERFILE_NAME=Dockerfile-standalone
 else
   echo "[INFO] Starting config for $type server: ${hostnames[$index]} on ${hosts[$index]}"
+  export DOCKERFILE_NAME=Dockerfile-keepalive
 fi
 
 index_plus=$((index + 1))
@@ -126,12 +128,6 @@ if [ ! -f $SERVER_KEY ] || [ ! -f $SERVER_CSR ] || [ ! -f $SERVER_CRT ]; then
 	cat $SERVER_KEY $SERVER_CRT > $CERT_PATH/server.pem
 else
 	echo "[INFO] Not creating certificates, files exists"
-fi
-
-if [ $STANDALONE ]; then
-  export DOCKERFILE_NAME=Dockerfile-keepalive
-else
-  export DOCKERFILE_NAME=Dockerfile-standalone
 fi
 
 echo "[INFO] Starting Docker Environment"
