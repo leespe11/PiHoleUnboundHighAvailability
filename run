@@ -168,11 +168,6 @@ echo "global_defs {
 	enable_script_security
 }
 
-vrrp_script chk_ftl {
-	script \"/etc/scripts/chk_ftl.sh\"
-	interval 1
-	weight 10
-}
 vrrp_script chk_http_port {
 	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/80\'\"
 	interval 1
@@ -189,9 +184,9 @@ vrrp_script chk_dns_port {
 	weight 10
 }
 vrrp_script chk_docker_container {
-	script \"/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\"
+	script \"/bin/bash -c \'/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\'\"
 	interval 1
-	weight 10
+	weight 30
 }
 
 vrrp_instance PIHOLE {
