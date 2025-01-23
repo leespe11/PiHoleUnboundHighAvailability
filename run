@@ -189,12 +189,7 @@ vrrp_script chk_dns_port {
 	weight 10
 }
 vrrp_script chk_docker_container {
-	script \"/usr/bin/docker ps -a -q -f name=pihole\"
-	interval 1
-	weight 10
-}
-vrrp_script chk_docker_ftl {
-	script \"/usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\"
+	script \"/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\"
 	interval 1
 	weight 10
 }
@@ -224,7 +219,6 @@ vrrp_instance PIHOLE {
 		chk_https_port
 		chk_dns_port
 		chk_docker_container
-		chk_docker_ftl
 	}
 }" > /etc/keepalived/keepalived.conf
 
