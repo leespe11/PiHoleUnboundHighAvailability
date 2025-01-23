@@ -6,7 +6,6 @@ git clone https://github.com/leespe11/PiHoleUnboundHighAvailability.git
 ````
 ## Edit Config/Environment files
 **config.env**
-
 **config/cert_ext.cnf**
 
 ## RUN
@@ -16,11 +15,8 @@ chmod +x run
 ```
 # High-Availability Instances
 The run script takes one input paramater for the HA instances.
-
-The Index or hostname of the HOSTS/HOSTNAMES configured in **config.env**
-
+The Index or hostname of the HOSTNAMES configured in **config.env**
 The same config file should be coppied onto each instance and ./run with a different index
-
 
 Start the Master server
 ```
