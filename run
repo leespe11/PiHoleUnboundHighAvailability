@@ -40,7 +40,7 @@ if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
         echo "[ERR] Hostname / Host index not found: ${1}"
         exit 0
     fi
-else if [ $index -lt 0 ]; then
+elif [ $index -lt 0 ]; then
     echo "[ERR] Hostname not found in list: ${1}"
     exit 0
 fi
