@@ -55,12 +55,12 @@ else
   type="BACKUP"
 fi
 
-if [ $STANDALONE ]; then
-  echo "[INFO] Starting STANDALONE server: ${hostnames[$index]} on ${hosts[$index]}"
-  export DOCKERFILE_NAME=Dockerfile-standalone
-else
+if [ $STANDALONE -eq 0 ]; then
   echo "[INFO] Starting config for $type server: ${hostnames[$index]} on ${hosts[$index]}"
   export DOCKERFILE_NAME=Dockerfile-keepalive
+else
+  echo "[INFO] Starting STANDALONE server: ${hostnames[$index]} on ${hosts[$index]}"
+  export DOCKERFILE_NAME=Dockerfile-standalone
 fi
 
 index_plus=$((index + 1))
@@ -143,7 +143,7 @@ echo "[INFO] Sleeping 10s before changing pihole permissions"
 sleep 10
 docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R www-data:pihole /etc/pihole/ /etc/dnsmasq.d;"
 
-if ! [ $STANDALONE ]; then
+if [ $STANDALONE -eq 0 ]; then
   apt update && apt install keepalived -y
 
   systemctl enable keepalived.service
