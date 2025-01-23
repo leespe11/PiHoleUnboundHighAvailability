@@ -69,7 +69,7 @@ if [ $RUNUPDATE -eq 1 ]; then
 				RSYNC_COMMAND=$(rsync --rsync-path='/usr/bin/sudo /usr/bin/rsync' -aiu -e "ssh -l $SSH_USER -p$SSH_PORT" /etc/pihole/$FILE $SSH_USER@$SSH_IP:$REMOTEPIHOLEDIR)
 				echo "Output of Rsync Command: ${RSYNC_COMMAND}"
 					
-					if [[ "${RSYNC_COMMAND}" != "" ]]; then
+					if [[ "${RSYNC_COMMAND}" =~ "+" ]]; then
 						# rsync copied changes so restart
 
 						case $FILE in
@@ -119,8 +119,8 @@ if [ $RUNUPDATE -eq 1 ]; then
 
 		else
 			echo "`date '+%Y-%m-%d %H:%M:%S'` - Successfully restarted pihole-FTL service on $SSH_IP." 2>&1 | tee -a $LOGFILE
-			echo "`date '+%Y-%m-%d %H:%M:%S'` - Sleeping for 7 seconds to allow remote container to reboot" 2>&1 | tee -a $LOGFILE
-			sleep 7
+			#echo "`date '+%Y-%m-%d %H:%M:%S'` - Sleeping for 7 seconds to allow remote container to reboot" 2>&1 | tee -a $LOGFILE
+			#sleep 7
 		fi
 	fi
     # RESTART SSH_IP - END
