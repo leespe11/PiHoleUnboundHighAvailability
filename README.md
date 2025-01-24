@@ -1,4 +1,7 @@
 # Pi-hole Unbound DNSSEC HA/Standalone docker
+## Requirements
+Download and install docker for your appropriate distro [Docker](https://docs.docker.com/engine/install/) 
+
 ## Install
 Download Repository
 ```
