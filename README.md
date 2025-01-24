@@ -24,15 +24,15 @@ The same config file should be coppied onto each instance and ./run with a diffe
 
 Start the Master server
 ```
-./run 0
+sudo ./run 0
 ```
 Start the Standby/Backup server(s)
 ```
-./run 1
-./run 2
+sudo ./run 1
+sudo ./run 2
 ```
 
 ### Standalone Instance
 ```
-./run
+sudo ./run
 ```

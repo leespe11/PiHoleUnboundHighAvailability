@@ -185,12 +185,12 @@ vrrp_script chk_dns_port {
 }
 vrrp_script chk_docker_containerc {
 	script \"/bin/bash -c \'/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\'\"
-	interval 20
+	interval 7
 	weight -20
 }
 vrrp_script chk_docker_ftl {
 	script \"/bin/bash -c \'/etc/scripts/chk_ftl.sh\'\"
-	interval 20
+	interval 7
 	weight -20
 }
 
