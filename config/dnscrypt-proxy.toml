@@ -1,0 +1,10 @@
+listen_addresses = ['0.0.0.0:5053']
+
+# Forward everything to Unbound
+forwarding_rules = [
+  { pattern = '*', upstream = 'unbound:5335' }
+]
+
+# Enable DoH listener so Windows can connect
+doh_servers = true
+doh_listen_addresses = ['0.0.0.0:443']
