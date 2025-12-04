@@ -134,9 +134,7 @@ else
 fi
 
 echo "[INFO] Creating root.key for unbound"
-docker run --name unbound-anchor klutchell/unbound unbound-anchor -a /tmp/root.key
-docker cp unbound-anchor:/tmp/root.key ./data/root.key
-docker rm unbound-anchor
+docker run --rm --name unbound-anchor --entrypoint unbound-anchor -v "$(pwd)/data:/etc/unbound" klutchell/unbound -a /etc/unbound/root.key
 
 echo "[INFO] Starting Docker Environment"
 docker compose up -d --build #--force-recreate
