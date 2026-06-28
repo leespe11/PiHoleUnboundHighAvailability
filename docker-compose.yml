@@ -12,10 +12,11 @@ services:
       - "443:443/tcp"
     environment:
       TZ: ${TZ}
-      WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
+      FTLCONF_webserver_api_password: ${PIHOLE_WEBPASSWORD}
+      FTLCONF_dns_listeningMode: 'ALL'
       # Required UID/USER for running pihole in a docker container 
-      PIHOLE_UID: '0'
-      DNSMASQ_USER: 'root'
+      #PIHOLE_UID: '0'
+      #DNSMASQ_USER: 'root'
       PIHOLE_DNS_: '172.28.2.3'
       DNSSEC: 'true'
       WEBTHEME: 'default-dark'
