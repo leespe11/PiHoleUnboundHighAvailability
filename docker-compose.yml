@@ -4,7 +4,7 @@ services:
     build:
       context: ./config
       dockerfile: ${DOCKERFILE_NAME}
-    image: pihole/pihole:latest_https
+    image: pihole/pihole:latest
     ports:
       - "53:53/tcp"
       - "53:53/udp"
