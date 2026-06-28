@@ -85,57 +85,6 @@ else
 	mkdir ./data
 fi
 
-echo "[INFO] Checking if ./data/certs directory exist"
-if [ -d "./data/certs" ];then
-	echo "[INFO] Directory ./data/certs exists!"
-else 
-	echo "[WARN] Directory ./data/certs not found"
-	echo "[INFO] Creating: ./data/certs"
-	mkdir ./data/certs
-fi
-    
-CERT_PATH="./data/certs"
-SERVER_KEY="$CERT_PATH/server.key"
-SERVER_CSR="$CERT_PATH/server.csr"
-SERVER_CRT="$CERT_PATH/server.crt"
-EXTFILE="config/cert_ext.cnf"
-OPENSSL_CMD="/usr/bin/openssl"
-	
-if [ ! -f $SERVER_KEY ] || [ ! -f $SERVER_CSR ] || [ ! -f $SERVER_CRT ]; then 
-	# generating server key
-	echo "Generating private key"
-	$OPENSSL_CMD genrsa -out $SERVER_KEY  4096 2>/dev/null
-	if [ $? -ne 0 ] ; then
-		 echo "ERROR: Failed to generate $SERVER_KEY"
-		 exit 1
-	fi
-
-	## Update Common Name in External File
-	sed -i 's/commonName.*/commonName              = '"${LOCAL_USER}"'/' ./config/cert_ext.cnf
-	#/bin/echo "commonName              = $COMMON_NAME" >> $EXTFILE
-
-	# Generating Certificate Signing Request using config file
-	echo "Generating Certificate Signing Request"
-	$OPENSSL_CMD req -new -key $SERVER_KEY -out $SERVER_CSR -config $EXTFILE 2>/dev/null
-	if [ $? -ne 0 ] ; then
-		 echo "ERROR: Failed to generate $SERVER_CSR"
-		 exit 1
-	fi
-
-
-	echo "Generating self signed certificate"
-	$OPENSSL_CMD x509 -req -days 3650 -in $SERVER_CSR -signkey $SERVER_KEY -out $SERVER_CRT 2>/dev/null
-	if [ $? -ne 0 ] ; then
-		 echo "ERROR: Failed to generate self-signed certificate file $SERVER_CRT"
-	fi
-	cat $SERVER_KEY $SERVER_CRT > $CERT_PATH/server.pem
-else
-	echo "[INFO] Not creating certificates, files exists"
-fi
-
-echo "[INFO] Creating root.key for unbound"
-docker run --rm --name unbound-anchor --entrypoint unbound-anchor -v "$(pwd)/data:/etc/unbound" klutchell/unbound -a /etc/unbound/root.key
-
 echo "[INFO] Starting Docker Environment"
 docker compose up -d --build #--force-recreate
 

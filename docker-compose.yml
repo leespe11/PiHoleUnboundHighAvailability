@@ -35,7 +35,6 @@ services:
     volumes:
       - /pihole/settings:/etc/pihole:rw
       - /pihole/dnsmasq.d:/etc/dnsmasq.d:rw
-      - ./data/certs:/etc/lighttpd/certs
       - /pihole/log:/var/log/pihole-gemini:rw
     restart: unless-stopped
     #cap_add:
