@@ -63,7 +63,7 @@ services:
     container_name: dnscrypt-proxy
     restart: unless-stopped
     volumes:
-      - ./config/dnscrypt-proxy:/config
+      - ./config/dnscrypt-proxy.toml:/config/dnscrypt-proxy.toml
     ports:
       - "5053:5053/udp"
       - "5053:5053/tcp"
