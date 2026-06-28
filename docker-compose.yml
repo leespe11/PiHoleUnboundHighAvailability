@@ -64,6 +64,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./config/dnscrypt-proxy.toml:/config/dnscrypt-proxy.toml
+      - ./config/dnscryptv-forwarding-rules.txt:/config/forwarding-rules.txt
     ports:
       - "5053:5053/udp"
       - "5053:5053/tcp"
