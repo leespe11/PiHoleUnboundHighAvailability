@@ -5,4 +5,3 @@ forwarding_rules = '/config/forwarding-rules.txt'
 
 # Enable DoH listener so Windows can connect
 doh_servers = true
-doh_listen_addresses = ['0.0.0.0:443']
