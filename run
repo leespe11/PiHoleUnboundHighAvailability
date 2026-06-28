@@ -13,19 +13,18 @@ if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[
 		echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
 		exit 0
 	fi
-   
 fi
 
 if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -ne 1 ]; then
 	echo "*** Please make sure you have configured the environment variables in config.env ***"
 	echo "---USAGE---"
-	echo "./run [server index]|[server name]"
+	echo "./run [server index]|[hostname]"
 	exit 0
 fi
 
 index=-1
 STANDALONE=0
-if [ ${#hosts[@]} -eq 1 ]; then
+if [ ${#hosts[@]} -eq 1 ] || [ "${hosts[0]}" = "$1" ] || [ "$1" -eq "0" ]; then
   STANDALONE=1
   index=0
 else
