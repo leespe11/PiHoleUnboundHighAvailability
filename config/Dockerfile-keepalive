@@ -8,4 +8,4 @@ RUN sed -i '/piholeDir="\/etc\/${basename}"/a chmod 755 -R "${piholeDir}" "\/etc
     /usr/local/bin/pihole-gemini \n\
     "${PIHOLE_COMMAND}" status' >> /opt/pihole/gravity.sh; \
     chmod +x /usr/local/bin/pihole-gemini; \
-    apk update && apk install rsync openssh-client -y
+    apk update && apk install rsync openssh-client
