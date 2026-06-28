@@ -91,9 +91,10 @@ docker compose up -d --build #--force-recreate
 # workaround for https://github.com/pi-hole/docker-pi-hole/issues/610#issuecomment-922832145
 echo "[INFO] Done starting containers"
 
-echo "[INFO] Sleeping 10s before changing pihole permissions"
-sleep 10
-docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root:pihole /etc/pihole/ /etc/dnsmasq.d;"
+# TESTING> Still needed in piholev6?
+#echo "[INFO] Sleeping 10s before changing pihole permissions"
+#sleep 10
+#docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root:pihole /etc/pihole/ /etc/dnsmasq.d;"
 
 if [ $STANDALONE -eq 0 ]; then
   apt update && apt install keepalived -y

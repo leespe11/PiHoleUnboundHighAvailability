@@ -50,7 +50,6 @@ services:
     image: klutchell/unbound
     volumes:
       - ./config/unbound.conf:/etc/unbound/custom.conf.d/unbound.conf
-      - ./data/root.key:/var/lib/unbound/root.key
     restart: unless-stopped
     networks:
       pihole-net:
