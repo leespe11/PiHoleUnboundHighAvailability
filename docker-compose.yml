@@ -27,7 +27,6 @@ services:
       SSH_IP: ${SSH_IP}
       SSH_PORT: ${SSH_PORT}
       LOGKEEPDAYS: ${LOGKEEPDAYS}
-      LOCAL_NETWORK: ${LOCAL_NETWORK}
     ### https://github.com/pi-hole/docker-pi-hole  
     ### Can mount volumes, although there is a known bug where pihole start up scripts
     ### while change the permissions,users, and groups on somefiles making them inaccasable...
