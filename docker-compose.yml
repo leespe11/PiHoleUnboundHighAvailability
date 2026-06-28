@@ -50,7 +50,8 @@ services:
     container_name: unbound
     image: klutchell/unbound
     volumes:
-      - ./config/unbound.conf:/etc/unbound/custom.conf.d/unbound.conf
+      #- ./config/unbound.conf:/etc/unbound/custom.conf.d/unbound.conf
+      - ./config/unbound.conf:/etc/unbound/unbound.conf
     restart: unless-stopped
     networks:
       pihole-net:
@@ -64,7 +65,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./config/dnscrypt-proxy.toml:/config/dnscrypt-proxy.toml
-      - ./config/dnscryptv-forwarding-rules.txt:/config/forwarding-rules.txt
+      - ./config/dnscrypt-forwarding-rules.txt:/config/forwarding-rules.txt
     ports:
       - "5053:5053/udp"
       - "5053:5053/tcp"
