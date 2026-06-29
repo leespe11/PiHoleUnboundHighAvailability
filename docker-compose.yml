@@ -50,7 +50,7 @@ services:
     container_name: unbound
     image: klutchell/unbound
     volumes:
-      - ./config/unbound.conf:/etc/unbound/custom.conf.d/custom.conf
+      - ./config/unbound.conf:/etc/unbound/custom.conf.d/unbound.conf
     restart: unless-stopped
     networks:
       pihole-net:

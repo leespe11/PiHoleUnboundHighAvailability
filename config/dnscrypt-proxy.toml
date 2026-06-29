@@ -1,7 +1,10 @@
 listen_addresses = ['0.0.0.0:5053']
 
+# Don't use public resolvers
+server_names = []
+
 # Forward everything to Unbound
 forwarding_rules = '/config/forwarding-rules.txt'
 
 # Enable DoH listener so Windows can connect
-doh_servers = true
+#doh_servers = true
