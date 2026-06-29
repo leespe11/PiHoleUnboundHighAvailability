@@ -58,26 +58,6 @@ services:
         aliases:
           - unbound
 
-  dnscrypt-proxy:
-    image: klutchell/dnscrypt-proxy:latest
-    container_name: dnscrypt-proxy
-    restart: unless-stopped
-    volumes:
-      - ./config/dnscrypt-proxy.toml:/config/dnscrypt-proxy.toml
-      - ./config/dnscrypt-forwarding-rules.txt:/config/forwarding-rules.txt
-    ports:
-      - "5053:5053/udp"
-      - "5053:5053/tcp"
-    command: ["-config", "/config/dnscrypt-proxy.toml"]
-    depends_on:
-      - unbound
-    networks:
-      pihole-net:
-        ipv4_address: 172.28.2.4
-        aliases:
-          - dnscrypt-proxy
-
-
 networks:
   pihole-net:
     driver: bridge
