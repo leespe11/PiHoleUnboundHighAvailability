@@ -1,57 +1,39 @@
-#!/bin/bash
-echo "[INFO] Loading environmental variables"
-set -a
-source config.env
-
-IFS=', ' read -r -a hosts <<< "$HOSTS"
-IFS=', ' read -r -a hostnames <<< "$HOSTNAMES"
-IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
-
-if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
-    if [ ${#hosts[@]} -gt 1 ] || [ ${#hostnames[@]} -gt 1 ]; then
-		echo "[ERR] ARRAY LENGTHS DONT MATCH"
-		echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
-		exit 0
-	fi
-fi
-
-if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -ne 1 ]; then
+if [ ${#hosts[@]} -gt 1 ] && [ $# -ne 1 ]; then
 	echo "*** Please make sure you have configured the environment variables in config.env ***"
 	echo "---USAGE---"
-	echo "./run [server index]|[hostname]"
-	exit 0
+	echo "./run [server index]|[hostname]|[host IP]"
+	exit 1
 fi
 
 index=-1
 STANDALONE=0
 if [ ${#hosts[@]} -eq 1 ]; then
-  STANDALONE=1
-  index=0
+	STANDALONE=1
+	index=0
+elif [[ $1 =~ ^[0-9]+$ ]]; then
+	if [ "$1" -lt "${#hosts[@]}" ]; then
+		index=$1
+	fi
 else
-  for i in "${!hostnames[@]}"; do
-    if [ "${hostnames[$i]}" == "$1" ]; then
-      index=$i
-    fi
-  done
+	for i in "${!hosts[@]}"; do
+		if [ "${hostnames[$i]}" == "$1" ] || [ "${hosts[$i]}" == "$1" ]; then
+			index=$i
+			break
+		fi
+	done
 fi
 
-if [ $index -lt 0 ] && ! [[ $1 =~ ^[0-9]+$ ]]; then
-    if [ $1 -lt "${#hostnames[@]}" ]; then
-		  index=$1
-    else
-        echo "[ERR] Hostname / Host index not found: ${1}"
-        exit 0
-    fi
-elif [ $index -lt 0 ]; then
-    echo "[ERR] Hostname not found in list: ${1}"
-    exit 0
+if [ $index -lt 0 ]; then
+	echo "[ERR] Hostname / Host index not found: ${1}"
+	echo "[ERR] Valid options: 0-$(( ${#hosts[@]} - 1 )), ${HOSTNAMES}, or ${HOSTS}"
+	exit 1
 fi
 
 type=""
 if [ $index -eq 0 ]; then
-  type="MASTER"
+	type="MASTER"
 else
-  type="BACKUP"
+	type="BACKUP"
 fi
 
 if [ $STANDALONE -eq 0 ]; then
