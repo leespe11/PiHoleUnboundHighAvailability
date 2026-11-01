@@ -189,4 +189,5 @@ vrrp_instance PIHOLE {
 fi
 
 echo "[INFO] DONE SETUP"
+
 exit 1
