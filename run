@@ -118,9 +118,9 @@ if [ $STANDALONE -eq 0 ]; then
 
   PRIORITY=$((150 - (index * 2)))
 
-IFACE=$(ip -o -4 addr show | awk -v ip="$LOCAL_IP" '$4 ~ "^"ip"/" {print $2; exit}')
-# Fall back to the default-route interface if LOCAL_IP isn't found
-[ -z "$IFACE" ] && IFACE=$(ip route show default | awk '{print $5; exit}')
+  IFACE=$(ip -o -4 addr show | awk -v ip="$LOCAL_IP" '$4 ~ "^"ip"/" {print $2; exit}')
+  # Fall back to the default-route interface if LOCAL_IP isn't found
+  [ -z "$IFACE" ] && IFACE=$(ip route show default | awk '{print $5; exit}')
   
 echo "global_defs {
 	router_id pihole-dns-0$index_plus
@@ -184,8 +184,8 @@ vrrp_instance PIHOLE {
 
   systemctl restart keepalived.service
 
-  docker exec -it pihole ssh-keygen -t rsa
-  docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
+  #docker exec -it pihole ssh-keygen -t rsa
+  #docker exec -it pihole ssh-copy-id $SSH_USER@$SSH_IP
 fi
 
 echo "[INFO] DONE SETUP"
