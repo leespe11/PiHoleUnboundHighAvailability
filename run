@@ -1,8 +1,25 @@
-if [ ${#hosts[@]} -gt 1 ] && [ $# -ne 1 ]; then
+#!/bin/bash
+echo "[INFO] Loading environmental variables"
+set -a
+source config.env
+
+IFS=', ' read -r -a hosts <<< "$HOSTS"
+IFS=', ' read -r -a hostnames <<< "$HOSTNAMES"
+IFS=', ' read -r -a ssh_usernames <<< "$SSH_USERNAMES"
+
+if [ ${#hosts[@]} -ne ${#hostnames[@]} ] || [ ${#hosts[@]} -ne ${#ssh_usernames[@]} ]; then
+    if [ ${#hosts[@]} -gt 1 ] || [ ${#hostnames[@]} -gt 1 ]; then
+		echo "[ERR] ARRAY LENGTHS DONT MATCH"
+		echo "[ERR] HOSTS, HOSTNAMES, and SSH_USERNAMES environment variables do not match"
+		exit 0
+	fi
+fi
+
+if [ "$1" == "" ] || [ $# -gt 1 ] && [ ${#hosts[@]} -ne 1 ]; then
 	echo "*** Please make sure you have configured the environment variables in config.env ***"
 	echo "---USAGE---"
-	echo "./run [server index]|[hostname]|[host IP]"
-	exit 1
+	echo "./run [server index]|[hostname]"
+	exit 0
 fi
 
 index=-1
