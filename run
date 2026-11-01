@@ -24,7 +24,7 @@ fi
 
 index=-1
 STANDALONE=0
-if [ ${#hosts[@]} -eq 1 ] || [ "${hosts[0]}" = "$1" ] || [ "$1" -eq "0" ]; then
+if [ ${#hosts[@]} -eq 1 ]; then
   STANDALONE=1
   index=0
 else
@@ -35,7 +35,7 @@ else
   done
 fi
 
-if [ $index -lt 0 ] && ! [[ $1 =~ '^[0-9]+$' ]]; then
+if [ $index -lt 0 ] && ! [[ $1 =~ ^[0-9]+$ ]]; then
     if [ $1 -lt "${#hostnames[@]}" ]; then
 		  index=$1
     else
