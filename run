@@ -53,13 +53,13 @@ else
 	type="BACKUP"
 fi
 
-if [ $STANDALONE -eq 0 ]; then
-  echo "[INFO] Starting config for $type server: ${hostnames[$index]} on ${hosts[$index]}"
-  export DOCKERFILE_NAME=Dockerfile-keepalive
-else
-  echo "[INFO] Starting STANDALONE server: ${hostnames[$index]} on ${hosts[$index]}"
-  export DOCKERFILE_NAME=Dockerfile-standalone
-fi
+#if [ $STANDALONE -eq 0 ]; then
+#  echo "[INFO] Starting config for $type server: ${hostnames[$index]} on ${hosts[$index]}"
+#  export DOCKERFILE_NAME=Dockerfile-keepalive
+#else
+#  echo "[INFO] Starting STANDALONE server: ${hostnames[$index]} on ${hosts[$index]}"
+#  export DOCKERFILE_NAME=Dockerfile-standalone
+#fi
 
 index_plus=$((index + 1))
 if [ $index -eq $((${#hosts[@]} - 1)) ]; then
@@ -81,6 +81,10 @@ else
 	echo "[WARN] Directory ./data not found"
 	echo "[INFO] Creating: ./data"
 	mkdir ./data
+fi
+
+if [ $STANDALONE -eq 0 ] && [ $index -eq 0 ]; then
+	COMPOSE_PROFILES=master
 fi
 
 echo "[INFO] Starting Docker Environment"
