@@ -114,6 +114,11 @@ if [ $STANDALONE -eq 0 ]; then
   cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
 
   PRIORITY=$((150 - (index * 2)))
+
+IFACE=$(ip -o -4 addr show | awk -v ip="$LOCAL_IP" '$4 ~ "^"ip"/" {print $2; exit}')
+# Fall back to the default-route interface if LOCAL_IP isn't found
+[ -z "$IFACE" ] && IFACE=$(ip route show default | awk '{print $5; exit}')
+  
 echo "global_defs {
 	router_id pihole-dns-0$index_plus
 	script_user root
@@ -148,7 +153,7 @@ vrrp_script chk_docker_ftl {
 
 vrrp_instance PIHOLE {
 	state $type
-	interface eth0
+	interface $IFACE
 	virtual_router_id 55
 	priority $PRIORITY
 	advert_int 1
