@@ -103,54 +103,58 @@ if [ $STANDALONE -eq 0 ]; then
 
   systemctl enable keepalived.service
 
-  chmod +x ./config/chk_ftl.sh
+  # Resolve the real path to bash. On merged-/usr systems (Ubuntu, Debian 12+)
+  # /bin is a symlink to usr/bin, and keepalived's enable_script_security
+  # rejects script paths that go through a symlinked directory.
+  BASH_BIN=$(readlink -f "$(command -v bash)")
+  echo "[INFO] Using bash at $BASH_BIN for keepalived checks"
 
-  echo "[INFO] Checking if /etc/scripts directory exist"
-  if [ -d "/etc/scripts" ];then
-    echo "[INFO] Directory /etc/scripts exists!"
-  else
-    echo "[WARN] Directory /etc/scripts not found"
-    echo "[INFO] Creating: /etc/scripts"
-    mkdir /etc/scripts
-  fi
+  # keepalived only runs scripts that are owned by root and not writable
+  # by anyone else, including every directory above them
+  echo "[INFO] Installing /etc/scripts/chk_ftl.sh"
+  install -d -o root -g root -m 755 /etc/scripts
+  install -o root -g root -m 755 ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
+  # Strip Windows line endings in case the file was edited on Windows
+  sed -i 's/\r$//' /etc/scripts/chk_ftl.sh
 
-  cp ./config/chk_ftl.sh /etc/scripts/chk_ftl.sh
-
-  PRIORITY=$((150 - (index * 2)))
+  # Checks subtract priority when they FAIL, so a healthy node never gains
+  # points. The gap between nodes (5) is smaller than any single penalty (10),
+  # so one failed check on the master hands the VIP to the backup, and the
+  # master takes it back once it is healthy again.
+  #   index 0 (MASTER) = 150, index 1 = 145, index 2 = 140, ...
+  PRIORITY=$((150 - (index * 5)))
 
   IFACE=$(ip -o -4 addr show | awk -v ip="$LOCAL_IP" '$4 ~ "^"ip"/" {print $2; exit}')
   # Fall back to the default-route interface if LOCAL_IP isn't found
   [ -z "$IFACE" ] && IFACE=$(ip route show default | awk '{print $5; exit}')
-  
-echo "global_defs {
+
+  echo "[INFO] Writing /etc/keepalived/keepalived.conf ($type, priority $PRIORITY, interface $IFACE)"
+  cat > /etc/keepalived/keepalived.conf <<EOF
+global_defs {
 	router_id pihole-dns-0$index_plus
 	script_user root
 	enable_script_security
 }
 
 vrrp_script chk_http_port {
-	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/80\'\"
-	interval 1
-	weight 5
-}
-vrrp_script chk_https_port {
-	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/443\'\"
-	interval 1
-	weight 5
+	script "$BASH_BIN -c '</dev/tcp/127.0.0.1/80'"
+	interval 2
+	fall 2
+	rise 2
+	weight -10
 }
 vrrp_script chk_dns_port {
-	script \"/bin/bash -c \'</dev/tcp/127.0.0.1/53\'\"
-	interval 1
-	weight 5
-}
-vrrp_script chk_docker_containerc {
-	script \"/bin/bash -c \'/usr/bin/docker ps -q -f name=pihole && /usr/bin/docker exec -it pihole ps ax | grep -v grep | grep pihole-FTL\'\"
-	interval 7
-	weight -20
+	script "$BASH_BIN -c '</dev/tcp/127.0.0.1/53'"
+	interval 2
+	fall 2
+	rise 2
+	weight -10
 }
 vrrp_script chk_docker_ftl {
-	script \"/bin/bash -c \'/etc/scripts/chk_ftl.sh\'\"
+	script "$BASH_BIN /etc/scripts/chk_ftl.sh"
 	interval 7
+	fall 2
+	rise 1
 	weight -20
 }
 
@@ -176,11 +180,20 @@ vrrp_instance PIHOLE {
 
 	track_script {
 		chk_http_port
-		chk_https_port
 		chk_dns_port
 		chk_docker_ftl
 	}
-}" > /etc/keepalived/keepalived.conf
+}
+EOF
+  chmod 640 /etc/keepalived/keepalived.conf
+
+  # Validate the config when this keepalived version supports it (2.x)
+  if keepalived --help 2>&1 | grep -q -- '--config-test'; then
+    if ! keepalived --config-test -f /etc/keepalived/keepalived.conf; then
+      echo "[ERR] keepalived.conf failed validation, not restarting keepalived"
+      exit 1
+    fi
+  fi
 
   systemctl restart keepalived.service
 
