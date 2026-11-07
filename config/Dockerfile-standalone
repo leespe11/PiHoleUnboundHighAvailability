@@ -1,3 +1,0 @@
-FROM pihole/pihole:latest
-
-RUN sed -i '/piholeDir="\/etc\/${basename}"/a chmod 755 -R "${piholeDir}" "\/etc\/dnsmasq.d"\nchown -R root.pihole "${piholeDir}" "\/etc\/dnsmasq.d"\n' /opt/pihole/gravity.sh;
