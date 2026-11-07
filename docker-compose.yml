@@ -11,25 +11,10 @@ services:
       TZ: ${TZ}
       FTLCONF_webserver_api_password: ${PIHOLE_WEBPASSWORD}
       FTLCONF_dns_listeningMode: 'ALL'
-      # Required UID/USER for running pihole in a docker container 
-      #PIHOLE_UID: '0'
-      #DNSMASQ_USER: 'root'
-      PIHOLE_DNS_: '172.28.2.3'
-      DNSSEC: 'true'
-      WEBTHEME: 'default-dark'
-      VIRTUAL_HOST: ${LOCAL_USER}
-      HTTPS_PORT: '443'
-      IP: ${LOCAL_IP}
-      SSH_USER: ${SSH_USER}
-      SSH_IP: ${SSH_IP}
-      SSH_PORT: ${SSH_PORT}
-      LOGKEEPDAYS: ${LOGKEEPDAYS}
-    ### https://github.com/pi-hole/docker-pi-hole  
-    ### Can mount volumes, although there is a known bug where pihole start up scripts
-    ### while change the permissions,users, and groups on somefiles making them inaccasable...
-    ### In the run script ive added a workaround as mentioned here: https://github.com/pi-hole/docker-pi-hole/issues/610#issuecomment-922832145
-    ### In the case server has a scheduled reboot regularly, all the following line to your cron job a few minites after the scheduled reboot: 
-    ### docker exec pihole /bin/bash -c "chmod 755 -R /etc/pihole/ /etc/dnsmasq.d && chown -R root.pihole /etc/pihole/ /etc/dnsmasq.d;"
+      FTLCONF_dns_upstreams: '172.28.2.3#53'
+      FTLCONF_dns_dnssec: 'true'
+      FTLCONF_webserver_interface_theme: 'default-dark'
+      FTLCONF_webserver_port: '80o,443os,[::]:80o,[::]:443os'
     volumes:
       - /pihole/settings:/etc/pihole:rw
       - /pihole/dnsmasq.d:/etc/dnsmasq.d:rw
