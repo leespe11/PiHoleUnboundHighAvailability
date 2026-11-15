@@ -17,8 +17,6 @@ services:
       FTLCONF_webserver_port: '80o,443os,[::]:80o,[::]:443os'
     volumes:
       - /pihole/settings:/etc/pihole:rw
-      - /pihole/dnsmasq.d:/etc/dnsmasq.d:rw
-      - /pihole/log:/var/log/pihole-gemini:rw
     restart: unless-stopped
     #cap_add:
     #  - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
